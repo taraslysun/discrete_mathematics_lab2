@@ -1,6 +1,6 @@
 """
-member1: <Name Surname>
-member2: <Name Surname>
+member1: Anna Onyshkevych
+member2: Taras Lysun
 """
 from typing import List, Dict
 
@@ -26,10 +26,33 @@ def bfs(graph: Dict[int, List[int]]) -> List[int]:
     :param graph: dict(key=int, value=list(int))
     :return: bfs-result
     """
-    # Your code goes here(delete "pass" keyword)
-    pass
+    res = []
+    queue = []
+    try:
+        key = list(graph.keys())[0]
+        res.append(key)
+        for val in graph[key]:
+            res.append(val)
+            queue.append(val)
+        while queue:
+            for val in graph[queue[0]]:
+                if val not in res:
+                    res.append(val)
+                    queue.append(val)
+            queue.pop(0)
+    except IndexError:
+        return []
+    return res
 
-print(bfs({1:[2,3], 2:[1,2], 3:[1,2,3], 4:[1], 5:[]}))
+bfs({0: [2, 5, 7],
+    1: [2, 6, 7],
+    2: [0, 1, 4, 5, 6, 7],
+    3: [6, 7],
+    4: [2, 5, 7],
+    5: [0, 2, 4, 7],
+    6: [1, 2, 3, 7],
+    7: [0, 1, 2, 3, 4, 5, 6]})
+# [0, 2, 5, 7, 1, 4, 6, 3]
 
 
 def dfs(graph: Dict[int, List[int]]) -> List[int]:
@@ -42,7 +65,20 @@ def dfs(graph: Dict[int, List[int]]) -> List[int]:
     """
     # Your code goes here(delete "pass" keyword)
     pass
-
+dfs(graph={
+    0:[1,2],
+    1:[0,5,6],
+    2:[0,3,4,9],
+    3:[9,10],
+    4:[2],
+    5:[1],
+    6:[1,7,8],
+    7:[6,8],
+    8:[6,7],
+    9:[2,3,10],
+    10:[3,9]
+})
+# [0, 1, 5, 6, 7, 8, 2, 3, 9, 10, 4]
 
 def calc_pow(graph: Dict[int, List[int]]) -> Dict[int, int]:
     """
