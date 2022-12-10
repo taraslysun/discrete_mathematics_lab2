@@ -15,17 +15,20 @@ def read_csv(file_name: str) -> Dict[int, List[int]]:
     :param file_name: string
     :return: graph
     """
-    with open(file_name, 'r', encoding='utf-8') as file:
-        reader = csv.reader(file, delimiter=',')
-        graph = {}
-        fild = [row for row in reader]
-        for row in fild:
-            for index, value in enumerate(row):
-                if value != '0':
-                    row[index] = row.index(value)
-            graph[fild.index(row)]=[x for x in row if x != '0']
-        return graph
-print(read_csv('graph.csv'))
+    try:
+        with open(file_name, 'r', encoding='utf-8') as file:
+            reader = csv.reader(file, delimiter=',')
+            graph = {}
+            fild = [row for row in reader]
+            for ind, row in enumerate(fild):
+                for index, value in enumerate(row):
+                    if value != '0':
+                        row[index] = row.index(value)
+                graph[ind]=[x for x in row if x != '0']
+            return graph
+    except FileNotFoundError:
+        return {}
+
 
 def bfs(graph: Dict[int, List[int]]) -> List[int]:
     """
@@ -53,16 +56,6 @@ def bfs(graph: Dict[int, List[int]]) -> List[int]:
         return []
     return res
 
-bfs({0: [2, 5, 7],
-    1: [2, 6, 7],
-    2: [0, 1, 4, 5, 6, 7],
-    3: [6, 7],
-    4: [2, 5, 7],
-    5: [0, 2, 4, 7],
-    6: [1, 2, 3, 7],
-    7: [0, 1, 2, 3, 4, 5, 6]})
-# [0, 2, 5, 7, 1, 4, 6, 3]
-
 
 def dfs(graph: Dict[int, List[int]]) -> List[int]:
     """
@@ -72,21 +65,24 @@ def dfs(graph: Dict[int, List[int]]) -> List[int]:
     :param graph:  dict(key=int, value=list(int))
     :return: dfs-result
     """
-    pass
-dfs(graph={
-    0:[1,2],
-    1:[0,5,6],
-    2:[0,3,4,9],
-    3:[9,10],
-    4:[2],
-    5:[1],
-    6:[1,7,8],
-    7:[6,8],
-    8:[6,7],
-    9:[2,3,10],
-    10:[3,9]
-})
-# [0, 1, 5, 6, 7, 8, 2, 3, 9, 10, 4]
+    res = []
+    queue = []
+    try:
+        key = list(graph.keys())[0]
+        res.append(key)
+        for val in graph[key]:
+            queue.append(val)
+        while queue:
+            if queue[0] not in res:
+                res.append(queue[0])
+            ind = queue.pop(0)
+            for val in reversed(graph[ind]):
+                if val not in res:
+                    queue.insert(0, val)
+    except IndexError:
+        return []
+    return res
+
 
 def calc_pow(graph: Dict[int, List[int]]) -> Dict[int, int]:
     """
@@ -100,7 +96,6 @@ def calc_pow(graph: Dict[int, List[int]]) -> Dict[int, int]:
         dct[key] = len(value)
     return dct
 
-print(calc_pow(read_csv('graph.csv')))
 
 def find_path(n: int, edges: List[List[int]], source: int, destination: int) -> bool:
     """
@@ -116,5 +111,24 @@ def find_path(n: int, edges: List[List[int]], source: int, destination: int) -> 
     :param destination: int
     :return:
     """
-    # Your code goes here(delete "pass" keyword)
-    pass
+    vortexes = set()
+    for edge in edges:
+        for vortex in edge:
+            if vortex >= n:
+                return False
+            vortexes.add(vortex)
+
+    res = list(vortexes)
+    res.insert(0,res.pop(source))
+
+    graph = {}
+    for vortex in res:
+        vtx = set()
+        for edge in edges:
+            if vortex in edge:
+                for v in edge:
+                    vtx.add(v)
+        vtx.discard(vortex)
+        graph[vortex] = list(vtx)
+
+    return destination in dfs(graph)
