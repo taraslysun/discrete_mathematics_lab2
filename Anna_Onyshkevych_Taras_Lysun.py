@@ -3,6 +3,7 @@ member1: Anna Onyshkevych
 member2: Taras Lysun
 """
 from typing import List, Dict
+import csv
 
 
 def read_csv(file_name: str) -> Dict[int, List[int]]:
@@ -14,9 +15,17 @@ def read_csv(file_name: str) -> Dict[int, List[int]]:
     :param file_name: string
     :return: graph
     """
-    # Your code goes here(delete "pass" keyword)
-    pass
-
+    with open(file_name, 'r', encoding='utf-8') as file:
+        reader = csv.reader(file, delimiter=',')
+        graph = {}
+        fild = [row for row in reader]
+        for row in fild:
+            for index, value in enumerate(row):
+                if value != '0':
+                    row[index] = row.index(value)
+            graph[fild.index(row)]=[x for x in row if x != '0']
+        return graph
+print(read_csv('graph.csv'))
 
 def bfs(graph: Dict[int, List[int]]) -> List[int]:
     """
@@ -63,7 +72,6 @@ def dfs(graph: Dict[int, List[int]]) -> List[int]:
     :param graph:  dict(key=int, value=list(int))
     :return: dfs-result
     """
-    # Your code goes here(delete "pass" keyword)
     pass
 dfs(graph={
     0:[1,2],
@@ -91,6 +99,8 @@ def calc_pow(graph: Dict[int, List[int]]) -> Dict[int, int]:
     for key, value in graph.items():
         dct[key] = len(value)
     return dct
+
+print(calc_pow(read_csv('graph.csv')))
 
 def find_path(n: int, edges: List[List[int]], source: int, destination: int) -> bool:
     """
